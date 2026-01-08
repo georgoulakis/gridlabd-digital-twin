@@ -1,0 +1,220 @@
+{
+  "examples": {
+    "example_1_test_low_vs_high_usage": {
+      "description": "Test same household with different weekly frequencies",
+      "base_config_id": "your-household-config-id",
+      "scenarios": [
+        {
+          "scenario_name": "low_usage_3_per_week",
+          "request": {
+            "cfg_id": "your-household-config-id",
+            "start_time": "2024-01-01 00:00:00",
+            "stop_time": "2024-01-07 23:59:59",
+            "appliance_patterns": {
+              "dishwasher": {
+                "schedule": {
+                  "activations_per_week": 3,
+                  "weekday": {
+                    "hour_probabilities": {
+                      "18-22": 0.8
+                    }
+                  },
+                  "weekend": {
+                    "hour_probabilities": {
+                      "19-23": 0.6
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "scenario_name": "high_usage_10_per_week",
+          "request": {
+            "cfg_id": "your-household-config-id",
+            "start_time": "2024-01-01 00:00:00",
+            "stop_time": "2024-01-07 23:59:59",
+            "appliance_patterns": {
+              "dishwasher": {
+                "schedule": {
+                  "activations_per_week": 10,
+                  "weekday": {
+                    "hour_probabilities": {
+                      "12-14": 0.4,
+                      "18-22": 0.6
+                    }
+                  },
+                  "weekend": {
+                    "hour_probabilities": {
+                      "10-23": 0.5
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    
+    "example_2_test_time_patterns": {
+      "description": "Test different time-of-day preferences",
+      "base_config_id": "your-household-config-id",
+      "scenarios": [
+        {
+          "scenario_name": "morning_person",
+          "request": {
+            "cfg_id": "your-household-config-id",
+            "start_time": "2024-01-01 00:00:00",
+            "stop_time": "2024-01-07 23:59:59",
+            "appliance_patterns": {
+              "dishwasher": {
+                "schedule": {
+                  "activations_per_week": 7,
+                  "weekday": {
+                    "hour_probabilities": {
+                      "6-9": 0.7
+                    }
+                  },
+                  "weekend": {
+                    "hour_probabilities": {
+                      "7-10": 0.6
+                    }
+                  }
+                }
+              },
+              "washing_machine": {
+                "schedule": {
+                  "activations_per_week": 5,
+                  "weekday": {
+                    "hour_probabilities": {
+                      "6-8": 0.8
+                    }
+                  },
+                  "weekend": {
+                    "hour_probabilities": {
+                      "8-11": 0.5
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "scenario_name": "evening_person",
+          "request": {
+            "cfg_id": "your-household-config-id",
+            "start_time": "2024-01-01 00:00:00",
+            "stop_time": "2024-01-07 23:59:59",
+            "appliance_patterns": {
+              "dishwasher": {
+                "schedule": {
+                  "activations_per_week": 7,
+                  "weekday": {
+                    "hour_probabilities": {
+                      "18-23": 0.8
+                    }
+                  },
+                  "weekend": {
+                    "hour_probabilities": {
+                      "19-23": 0.7
+                    }
+                  }
+                }
+              },
+              "washing_machine": {
+                "schedule": {
+                  "activations_per_week": 5,
+                  "weekday": {
+                    "hour_probabilities": {
+                      "18-22": 0.7
+                    }
+                  },
+                  "weekend": {
+                    "hour_probabilities": {
+                      "19-23": 0.6
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    
+    "example_3_partial_override": {
+      "description": "Override only weekday schedule, keep weekend from base config",
+      "request": {
+        "cfg_id": "your-household-config-id",
+        "start_time": "2024-01-01 00:00:00",
+        "stop_time": "2024-01-07 23:59:59",
+        "appliance_patterns": {
+          "dishwasher": {
+            "schedule": {
+              "weekday": {
+                "hour_probabilities": {
+                  "18-22": 1.0
+                }
+              }
+              // weekend schedule will be taken from base config
+            }
+          }
+        }
+      }
+    },
+    
+    "example_4_partner_api": {
+      "description": "Using partner-friendly API endpoint",
+      "request": {
+        "household": {
+          "config_id": "your-household-config-id"
+        },
+        "scenario": {
+          "start_time": "2024-01-01 00:00:00",
+          "stop_time": "2024-01-07 23:59:59"
+        },
+        "appliances": {
+          "dishwasher": {
+            "schedule": {
+              "activations_per_week": 7,
+              "weekday": {
+                "hour_probabilities": {
+                  "12-14": 0.4,
+                  "18-22": 0.6
+                }
+              },
+              "weekend": {
+                "hour_probabilities": {
+                  "10-13": 0.3,
+                  "18-23": 0.5
+                }
+              }
+            }
+          },
+          "washing_machine": {
+            "schedule": {
+              "activations_per_week": 5,
+              "weekday": {
+                "hour_probabilities": {
+                  "6-9": 0.3,
+                  "18-22": 0.5
+                }
+              },
+              "weekend": {
+                "hour_probabilities": {
+                  "8-11": 0.4,
+                  "14-17": 0.3,
+                  "19-23": 0.5
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+

@@ -1,0 +1,15 @@
+{
+  "scenario_id": "1454f218-98e7-4646-a8ab-f75bfbd93ada",
+  "config_id": "099d793c-f26a-47b3-8c13-b18041c35f58",
+  "config_name": "aspra_spitia_house",
+  "start_time": "2024-07-01 00:00:00",
+  "stop_time": "2024-07-07 23:59:00",
+  "created_at": "2025-11-28T12:18:42.231416",
+  "glm_file": "scenario_1454f218.glm",
+  "output_file": "results_1454f218.csv",
+  "generated_csvs": [
+    "washing_machine_consumption.csv"
+  ],
+  "generation_errors": {},
+  "scenario_dir": "./data/scenarios/aspra_spitia_house/1454f218-98e7-4646-a8ab-f75bfbd93ada"
+}

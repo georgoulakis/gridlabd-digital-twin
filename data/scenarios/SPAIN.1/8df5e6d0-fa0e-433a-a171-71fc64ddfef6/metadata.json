@@ -1,0 +1,16 @@
+{
+  "scenario_id": "8df5e6d0-fa0e-433a-a171-71fc64ddfef6",
+  "config_id": "91ea0f71-1433-468f-8849-64c54322af37",
+  "config_name": "SPAIN.1",
+  "start_time": "2024-07-01 00:00:00",
+  "stop_time": "2024-07-14 23:59:00",
+  "created_at": "2025-12-22T14:05:32.001194",
+  "glm_file": "scenario_8df5e6d0.glm",
+  "output_file": "results_8df5e6d0.csv",
+  "generated_csvs": [
+    "dishwasher_consumption.csv",
+    "washing_machine_consumption.csv"
+  ],
+  "generation_errors": {},
+  "scenario_dir": "./data/scenarios/SPAIN.1/8df5e6d0-fa0e-433a-a171-71fc64ddfef6"
+}

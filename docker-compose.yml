@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  db_configs:
+    image: postgres:13
+    container_name: db_configs
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespw
+      POSTGRES_DB: configs_db
+    volumes:
+      - postgres_configs_data:/var/lib/postgresql/data
+      - ./init_db_configs.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d configs_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app_network
+
+  db_results:
+    image: postgres:13
+    container_name: db_results
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespw
+      POSTGRES_DB: results_db
+    volumes:
+      - postgres_results_data:/var/lib/postgresql/data
+      - ./init_db_results.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d results_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app_network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gridlabd_api
+    depends_on:
+      db_configs:
+        condition: service_healthy
+      db_results:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      CONFIG_DB_HOST: db_configs
+      CONFIG_DB_PORT: 5432
+      CONFIG_DB_NAME: configs_db
+      CONFIG_DB_USER: postgres
+      CONFIG_DB_PASSWORD: postgrespw
+      RESULTS_DB_HOST: db_results
+      RESULTS_DB_PORT: 5432
+      RESULTS_DB_NAME: results_db
+      RESULTS_DB_USER: postgres
+      RESULTS_DB_PASSWORD: postgrespw
+      DATA_DIR: /data
+      PATTERNS_BASE_DIR: /data/patterns
+      PYTHONUNBUFFERED: 1
+    volumes:
+      - ./data:/data  # THIS LINE IS CRITICAL
+    networks:
+      - app_network
+    restart: unless-stopped
+
+volumes:
+  postgres_configs_data:
+  postgres_results_data:
+
+networks:
+  app_network:
+    driver: bridge

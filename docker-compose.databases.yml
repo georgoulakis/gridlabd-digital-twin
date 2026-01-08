@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  db_configs:
+    image: postgres:13
+    container_name: db_configs_local
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: configs_db
+    volumes:
+      - postgres_configs_data:/var/lib/postgresql/data
+      - ./init_db_configs.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - app_network_local
+
+  db_results:
+    image: postgres:13
+    container_name: db_results_local
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: results_db
+    volumes:
+      - postgres_results_data:/var/lib/postgresql/data
+      - ./init_db_results.sql:/docker-entrypoint-initdb.d/01_init.sql:ro
+    ports:
+      - "5433:5432"
+    networks:
+      - app_network_local
+
+volumes:
+  postgres_configs_data:
+  postgres_results_data:
+
+networks:
+  app_network_local:
+    driver: bridge

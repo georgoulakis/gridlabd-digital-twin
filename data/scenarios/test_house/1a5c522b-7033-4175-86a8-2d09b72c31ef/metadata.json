@@ -1,0 +1,14 @@
+{
+  "scenario_id": "1a5c522b-7033-4175-86a8-2d09b72c31ef",
+  "config_id": "5f350f80-17dd-40bc-b3bd-9ed2816d84cd",
+  "config_name": "test_house",
+  "start_time": "2024-07-01 00:00:00",
+  "stop_time": "2024-07-02 23:59:00",
+  "created_at": "2025-10-24T13:56:32.386493",
+  "glm_file": "scenario_1a5c522b.glm",
+  "output_file": "results_1a5c522b.csv",
+  "generated_csvs": [
+    "washing_machine_consumption.csv"
+  ],
+  "scenario_dir": "./data/scenarios/test_house/1a5c522b-7033-4175-86a8-2d09b72c31ef"
+}

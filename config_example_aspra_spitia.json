@@ -1,0 +1,50 @@
+{
+  "name": "aspra_spitia_house",
+  "config": {
+    "pilot": "aspra_spitia",
+    "timezone": "EET+2EEST",
+    "floor_area": 120,
+    "cooling_setpoint": 24,
+    "heating_setpoint": 20,
+    "design_cooling_setpoint": 26,
+    "design_cooling_capacity": 5000,
+    "design_heating_setpoint": 18,
+    "design_heating_capacity": 4000,
+    "thermostat_deadband": 2,
+    "number_of_stories": 1,
+    "ceiling_height": 2.5,
+    "envelope_UA": 200,
+    "window_wall_ratio": 0.15,
+    "number_of_doors": 2,
+    "Rwall": 3.5,
+    "Rwindows": 0.5,
+    "Rroof": 4.0,
+    "Rfloor": 2.0,
+    "glazing_layers": 2,
+    "cooling_system_type": "ELECTRIC",
+    "heating_system_type": "GAS",
+    "default_simulation": {
+      "output_properties": [
+        "house:total_load",
+        "house:hvac_load",
+        "house:air_temperature",
+        "house:outdoor_temperature"
+      ],
+      "recording_interval": 60,
+      "recording_limit": 1440
+    },
+    "appliance_templates": {
+      "washing_machine": {
+        "nominal_power": 2.2,
+        "duration_min": 90,
+        "activations_per_day": 1,
+        "pattern_dir": "washing_machine_patterns",
+        "generation_method": "scaling",
+        "baseline": 0,
+        "timestep_native": 7,
+        "output_timestep": 60
+      }
+    }
+  }
+}
+

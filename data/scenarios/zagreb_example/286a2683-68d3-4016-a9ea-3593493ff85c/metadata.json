@@ -1,0 +1,16 @@
+{
+  "scenario_id": "286a2683-68d3-4016-a9ea-3593493ff85c",
+  "config_id": "2c482919-9687-4451-a5f8-a61416e454e6",
+  "config_name": "zagreb_example",
+  "start_time": "2024-01-01 00:00:00",
+  "stop_time": "2024-01-06 00:00:00",
+  "created_at": "2026-01-05T13:14:14.853866",
+  "glm_file": "scenario_286a2683.glm",
+  "output_file": "results_286a2683.csv",
+  "generated_csvs": [
+    "dishwasher_consumption.csv",
+    "washing_machine_consumption.csv"
+  ],
+  "generation_errors": {},
+  "scenario_dir": "./data/scenarios/zagreb_example/286a2683-68d3-4016-a9ea-3593493ff85c"
+}
