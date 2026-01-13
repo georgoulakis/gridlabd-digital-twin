@@ -266,17 +266,38 @@ def is_weekend(date):
     return date.weekday() >= 5
 
 
+
+
 def generate_timeseries_with_probabilistic_schedule(templates_dir, nominal, duration_min, start_date, end_date,
                                                    schedule_config, method='weighted', baseline=0,
                                                    timestep_native=7, output_timestep=60, ref_index=0, seed=None):
     """
     Generate time series with probabilistic weekly schedule.
     
-    Args:
-        schedule_config: Dict with:
-            - activations_per_week: int
-            - weekday: dict with "hour_probabilities" key
-            - weekend: dict with "hour_probabilities" key
+    Format:
+    {
+      "activations_per_week": 7,
+      "weekday": {
+        "hour_probabilities": {
+          "6-9": 0.3,    # 30% probability during 6am-9am on weekdays
+          "12-14": 0.4,  # 40% probability during 12pm-2pm on weekdays
+          "18-22": 0.6   # 60% probability during 6pm-10pm on weekdays
+        }
+      },
+      "weekend": {
+        "hour_probabilities": {
+          "8-11": 0.2,   # 20% probability during 8am-11am on weekends
+          "14-17": 0.3,  # 30% probability during 2pm-5pm on weekends
+          "19-23": 0.5   # 50% probability during 7pm-11pm on weekends
+        }
+      }
+    }
+    
+    The system will:
+    - Use activations_per_week as the total number of activations per week
+    - Distribute activations across all days (weekdays and weekends) based on hour probabilities
+    - Higher probability hours/days are more likely to be selected
+    - Automatically balances between weekdays and weekends based on their probability values
     """
     if seed is not None:
         random.seed(seed)
@@ -332,6 +353,7 @@ def generate_timeseries_with_probabilistic_schedule(templates_dir, nominal, dura
         target_activations = int(activations_per_week * (days_in_week / 7.0))
         
         # Build probability array for each timestep in this week
+        # Uses weekday probabilities for Mon-Fri, weekend probabilities for Sat-Sun
         timestep_probs = []
         timestep_indices = []
         

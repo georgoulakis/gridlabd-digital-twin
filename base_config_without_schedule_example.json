@@ -1,0 +1,89 @@
+{
+  "name": "dublin_household_base",
+  "config": {
+    "location": "dublin",
+    "pilot": "dublin",
+    "timezone": "GMT+0DT",
+    
+    "floor_area": 120,
+    "number_of_stories": 2,
+    "ceiling_height": 2.7,
+    "envelope_UA": 180,
+    "window_wall_ratio": 0.18,
+    "number_of_doors": 2,
+    
+    "Rwall": 2.5,
+    "Rwindows": 0.35,
+    "Rroof": 4.5,
+    "Rfloor": 1.8,
+    "glazing_layers": 2,
+    
+    "cooling_system_type": "ELECTRIC",
+    "heating_system_type": "HEAT_PUMP",
+    "cooling_setpoint": 25,
+    "heating_setpoint": 20,
+    "design_cooling_setpoint": 28,
+    "design_heating_setpoint": 18,
+    "design_cooling_capacity": 3500,
+    "design_heating_capacity": 3000,
+    "cooling_COP": 3.0,
+    "heating_COP": 3.5,
+    "thermostat_deadband": 1.5,
+    "system_mode": "OFF",
+    
+    "solar_enabled": false,
+    
+    "objects": {
+      "waterheater": {
+        "main_wh": {
+          "tank_volume": 200,
+          "tank_UA": 2.0,
+          "tank_setpoint": 55,
+          "heating_element_capacity": 4.5,
+          "location": "INSIDE",
+          "heat_mode": "ELECTRIC",
+          "water_demand": "wh_demand*1",
+          "impedance_fraction": 0.7,
+          "current_fraction": 0.0,
+          "power_fraction": 0.3
+        }
+      }
+    },
+    
+    "appliance_templates": {
+      "dishwasher": {
+        "nominal_power": 1.8,
+        "duration_min": 120,
+        "generation_method": "weighted",
+        "pattern_dir": "dishwasher_patterns",
+        "baseline": 0,
+        "timestep_native": 7,
+        "output_timestep": 60,
+        "seed": 42,
+        "heatgain_fraction": 0.1,
+        "power_pf": 0.95,
+        "impedance_fraction": 0.1,
+        "current_fraction": 0.0,
+        "power_fraction": 0.9,
+        "is_240": "TRUE"
+      },
+      "washing_machine": {
+        "nominal_power": 2.0,
+        "duration_min": 90,
+        "generation_method": "scaling",
+        "pattern_dir": "washing_machine_patterns",
+        "baseline": 0,
+        "timestep_native": 7,
+        "output_timestep": 60,
+        "seed": 43,
+        "heatgain_fraction": 0.05,
+        "power_pf": 0.95,
+        "impedance_fraction": 0.1,
+        "current_fraction": 0.0,
+        "power_fraction": 0.9,
+        "is_240": "TRUE"
+      }
+    }
+  }
+}
+

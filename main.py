@@ -76,6 +76,7 @@ module powerflow;
 module climate;
 
 #include "typical_light_yearly.glm";
+#include "typical_fridge_yearly.glm";
 {% if solar_enabled %}module generators;{% endif %}
 
 clock {
@@ -214,6 +215,19 @@ object triplex_meter {
         };
         {% endfor %}
         {% endif %}
+        
+        // Refrigerator - always included with yearly schedule
+        object ZIPload {
+            name refrigerator;
+            parent house;
+            base_power yearly_refrigerator*0.15;
+            heatgain_fraction 0.90;
+            power_pf 0.80;
+            impedance_fraction 0.10;
+            current_fraction 0.60;
+            power_fraction 0.30;
+            is_240 FALSE;
+        };
         
         object multi_recorder {
             property {% for prop in output_properties %}{{ prop }}{% if not loop.last %},{% endif %}{% endfor %};
@@ -424,6 +438,39 @@ def _attach_lighting_schedule(scenario_dir: str):
                     LOG.info("Copied lighting schedule from existing scenario to: %s", dest_path)
                     return
         LOG.warning("typical_light_yearly.glm not found in templates directory. Please ensure it exists in %s", TEMPLATES_BASE_DIR)
+
+
+def _attach_fridge_schedule(scenario_dir: str):
+    """
+    Copy the typical_fridge_yearly.glm file into the scenario directory.
+    
+    This file contains the yearly_fridge schedule that is referenced in the GLM template.
+    The file is copied from the templates directory if it exists there, otherwise it will
+    be skipped if not found (non-fatal).
+    """
+    fridge_schedule_filename = "typical_fridge_yearly.glm"
+    source_path = os.path.join(TEMPLATES_BASE_DIR, fridge_schedule_filename)
+    dest_path = os.path.join(scenario_dir, fridge_schedule_filename)
+    
+    # Check if source file exists in templates directory
+    if os.path.exists(source_path):
+        if os.path.abspath(source_path) != os.path.abspath(dest_path):
+            shutil.copy2(source_path, dest_path)
+            LOG.info("Copied refrigerator schedule to scenario directory: %s", dest_path)
+    else:
+        # Try to find it in an existing scenario as fallback
+        for house_name in os.listdir(SCENARIOS_DIR):
+            house_path = os.path.join(SCENARIOS_DIR, house_name)
+            if not os.path.isdir(house_path):
+                continue
+            for existing_scenario_id in os.listdir(house_path):
+                existing_scenario_path = os.path.join(house_path, existing_scenario_id)
+                fallback_path = os.path.join(existing_scenario_path, fridge_schedule_filename)
+                if os.path.exists(fallback_path):
+                    shutil.copy2(fallback_path, dest_path)
+                    LOG.info("Copied refrigerator schedule from existing scenario to: %s", dest_path)
+                    return
+        LOG.warning("typical_fridge_yearly.glm not found in templates directory. Please ensure it exists in %s", TEMPLATES_BASE_DIR)
 
 
 # ---------- Startup / Shutdown ----------
@@ -865,6 +912,9 @@ def create_simulation(request: SimulationRequest):
     
     # Copy lighting schedule file to scenario directory
     _attach_lighting_schedule(scenario_dir)
+    
+    # Copy refrigerator schedule file to scenario directory
+    _attach_fridge_schedule(scenario_dir)
 
     # set output file
     output_csv = f"results_{scenario_id[:8]}.csv"

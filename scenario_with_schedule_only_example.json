@@ -1,0 +1,49 @@
+{
+  "cfg_id": "REPLACE_WITH_YOUR_CONFIG_ID",
+  "start_time": "2024-07-01 00:00:00",
+  "stop_time": "2024-07-14 23:59:00",
+  "output_properties": [
+    "house:total_load",
+    "house:air_temperature",
+    "house:outdoor_temperature"
+  ],
+  "appliance_patterns": {
+    "dishwasher": {
+      "schedule": {
+        "activations_per_week": 7,
+        "weekday": {
+          "hour_probabilities": {
+            "6-9": 0.3,
+            "12-14": 0.4,
+            "18-22": 0.6
+          }
+        },
+        "weekend": {
+          "hour_probabilities": {
+            "10-13": 0.3,
+            "14-17": 0.4,
+            "19-23": 0.5
+          }
+        }
+      }
+    },
+    "washing_machine": {
+      "schedule": {
+        "activations_per_week": 5,
+        "weekday": {
+          "hour_probabilities": {
+            "6-9": 0.5,
+            "18-22": 0.6
+          }
+        },
+        "weekend": {
+          "hour_probabilities": {
+            "8-12": 0.4,
+            "14-18": 0.5
+          }
+        }
+      }
+    }
+  }
+}
+

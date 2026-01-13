@@ -1,0 +1,179 @@
+{
+  "name": "dublin_complete_test_household",
+  "config": {
+    "location": "dublin",
+    "pilot": "dublin",
+    "timezone": "PST+8DT",
+    
+    "floor_area": 120,
+    "number_of_stories": 2,
+    "ceiling_height": 2.7,
+    "envelope_UA": 180,
+    "window_wall_ratio": 0.18,
+    "number_of_doors": 2,
+    
+    "Rwall": 2.5,
+    "Rwindows": 0.35,
+    "Rroof": 4.5,
+    "Rfloor": 1.8,
+    "glazing_layers": 2,
+    
+    "cooling_system_type": "ELECTRIC",
+    "heating_system_type": "HEAT_PUMP",
+    "cooling_setpoint": 25,
+    "heating_setpoint": 20,
+    "design_cooling_setpoint": 28,
+    "design_heating_setpoint": 18,
+    "design_cooling_capacity": 3500,
+    "design_heating_capacity": 3000,
+    "cooling_COP": 3.0,
+    "heating_COP": 3.5,
+    "thermostat_deadband": 1.5,
+    "system_mode": "OFF",
+    
+    "solar_enabled": true,
+    "solar_config": {
+      "area": 20,
+      "efficiency": 0.18
+    },
+    
+    "objects": {
+      "waterheater": {
+        "main_wh": {
+          "tank_volume": 200,
+          "tank_UA": 2.0,
+          "tank_setpoint": 55,
+          "heating_element_capacity": 4.5,
+          "location": "INSIDE",
+          "heat_mode": "ELECTRIC",
+          "water_demand": "wh_demand*1",
+          "impedance_fraction": 0.7,
+          "current_fraction": 0.0,
+          "power_fraction": 0.3,
+          "power_factor": 1.0
+        }
+      },
+      
+      "lights": {
+        "indoor_lights": {
+          "installed_kw": 0.6,
+          "power_pf": 0.95
+        },
+        "exterior_lights": {
+          "installed_kw": 0.1,
+          "power_pf": 0.95
+        }
+      },
+      
+      "appliances": {
+        "oven": {
+          "base_power": "3.500",
+          "heatgain_fraction": 0.3,
+          "power_pf": 0.95,
+          "impedance_fraction": 0.05,
+          "current_fraction": 0.05,
+          "power_fraction": 0.9,
+          "is_240": "TRUE"
+        }
+      }
+    },
+    
+    "appliance_templates": {
+      "dishwasher": {
+        "nominal_power": 1.8,
+        "duration_min": 120,
+        "generation_method": "weighted",
+        "pattern_dir": "dishwasher_patterns",
+        "baseline": 0,
+        "timestep_native": 7,
+        "output_timestep": 60,
+        "seed": 42,
+        "heatgain_fraction": 0.1,
+        "power_pf": 0.95,
+        "impedance_fraction": 0.1,
+        "current_fraction": 0.0,
+        "power_fraction": 0.9,
+        "is_240": "TRUE",
+        "schedule": {
+          "activations_per_week": 7,
+          "weekday": {
+            "hour_probabilities": {
+              "6-9": 0.3,
+              "12-14": 0.4,
+              "18-22": 0.6
+            }
+          },
+          "weekend": {
+            "hour_probabilities": {
+              "10-13": 0.3,
+              "14-17": 0.4,
+              "19-23": 0.5
+            }
+          }
+        }
+      },
+      "washing_machine": {
+        "nominal_power": 2.0,
+        "duration_min": 90,
+        "generation_method": "scaling",
+        "pattern_dir": "washing_machine_patterns",
+        "baseline": 0,
+        "timestep_native": 7,
+        "output_timestep": 60,
+        "seed": 43,
+        "heatgain_fraction": 0.05,
+        "power_pf": 0.95,
+        "impedance_fraction": 0.1,
+        "current_fraction": 0.0,
+        "power_fraction": 0.9,
+        "is_240": "TRUE",
+        "schedule": {
+          "activations_per_week": 5,
+          "weekday": {
+            "hour_probabilities": {
+              "6-9": 0.5,
+              "18-22": 0.6
+            }
+          },
+          "weekend": {
+            "hour_probabilities": {
+              "8-12": 0.4,
+              "14-18": 0.5
+            }
+          }
+        }
+      }
+    },
+    
+    "custom_schedules": {
+      "wh_demand": [
+        {"time": "* 0-4 * * *", "value": "0"},
+        {"time": "0-9 5 * * *", "value": "1"},
+        {"time": "10-59 5 * * *", "value": "0"},
+        {"time": "* 6 * * *", "value": "0.5"},
+        {"time": "0-29 7 * * *", "value": "1"},
+        {"time": "30-59 7 * * *", "value": "0.5"},
+        {"time": "* 8-17 * * *", "value": "0"},
+        {"time": "0-14 18 * * *", "value": "0.8"},
+        {"time": "15-29 18 * * *", "value": "1"},
+        {"time": "30-59 18 * * *", "value": "0.5"},
+        {"time": "* 19-20 * * *", "value": "0.3"},
+        {"time": "0-29 21 * * *", "value": "0.5"},
+        {"time": "30-59 21 * * *", "value": "0"},
+        {"time": "* 22-23 * * *", "value": "0"}
+      ]
+    },
+    
+    "default_simulation": {
+      "output_properties": [
+        "house:total_load",
+        "house:air_temperature",
+        "house:outdoor_temperature",
+        "house:hvac_load"
+      ],
+      "recording_interval": 60,
+      "recording_limit": 999999
+    }
+  }
+}
+
