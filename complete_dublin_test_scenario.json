@@ -13,7 +13,8 @@
     "indoor_lights:power.real",
     "exterior_lights:power.real",
     "main_wh:power.real",
-    "oven:base_power"
+    "oven:base_power",
+    "misc_appliances:base_power"
   ],
   "appliance_patterns": {
     "dishwasher": {

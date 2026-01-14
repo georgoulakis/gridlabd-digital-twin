@@ -65,6 +65,18 @@
         }
       },
       
+      "misc_appliances": {
+        "misc_appliances": {
+          "base_power": 0.5,
+          "power_pf": 0.95,
+          "heatgain_fraction": 0.3,
+          "impedance_fraction": 0.1,
+          "current_fraction": 0.0,
+          "power_fraction": 0.9,
+          "is_240": "FALSE"
+        }
+      },
+      
       "appliances": {
         "oven": {
           "base_power": "3.500",
