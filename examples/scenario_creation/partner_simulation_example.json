@@ -1,0 +1,22 @@
+{
+  "partner_request_id": "test-aspra-spitia-001",
+  "household": {
+    "name": "aspra_spitia_house"
+  },
+  "scenario": {
+    "start_time": "2024-07-01 00:00:00",
+    "stop_time": "2024-07-07 23:59:00",
+    "interval_seconds": 60,
+    "output_properties": [
+      "house:total_load",
+      "house:air_temperature",
+      "house:outdoor_temperature"
+    ]
+  },
+  "execution": {
+    "run_immediately": true,
+    "return_results": true,
+    "result_format": "partner"
+  }
+}
+

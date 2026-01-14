@@ -1,0 +1,254 @@
+module tape;
+module residential {
+    implicit_enduses NONE;
+};
+module powerflow;
+module climate;
+
+#include "typical_light_yearly.glm";
+#include "typical_fridge_yearly.glm";
+#include "typical_misc_appliances_yearly.glm";
+module generators;
+
+clock {
+    timezone PST+8DT;
+    starttime '2024-07-01 00:00:00';
+    stoptime '2024-07-07 23:59:00';
+}
+
+
+object csv_reader {
+    name climate_reader_e560ce45;
+    filename "dublin.csv";
+}
+
+object climate {
+    tmyfile "dublin.csv";
+    reader climate_reader_e560ce45;
+};
+
+
+
+
+schedule wh_demand {
+    
+    * 0-4 * * * 0;
+    
+    0-9 5 * * * 1;
+    
+    10-59 5 * * * 0;
+    
+    * 6 * * * 0.5;
+    
+    0-29 7 * * * 1;
+    
+    30-59 7 * * * 0.5;
+    
+    * 8-17 * * * 0;
+    
+    0-14 18 * * * 0.8;
+    
+    15-29 18 * * * 1;
+    
+    30-59 18 * * * 0.5;
+    
+    * 19-20 * * * 0.3;
+    
+    0-29 21 * * * 0.5;
+    
+    30-59 21 * * * 0;
+    
+    * 22-23 * * * 0;
+    
+}
+
+
+
+object triplex_meter {
+    name meter1;
+    phases AS;
+    nominal_voltage 120;
+    
+    
+    object inverter {
+        name inverter1;
+        phases S;
+        parent meter1;
+        inverter_type FOUR_QUADRANT;
+        power_factor 1.0;
+        
+        object solar {
+            name house_solar;
+            parent inverter1;
+            generator_mode SUPPLY_DRIVEN;
+            generator_status ONLINE;
+            panel_type SINGLE_CRYSTAL_SILICON;
+            efficiency 0.18;
+            area 215.278;
+        };
+    };
+    
+    
+    object house {
+        name house;
+        heating_setpoint 68.0;
+        cooling_setpoint 77.0;
+        system_mode OFF;
+        cooling_system_type ELECTRIC;
+        design_cooling_setpoint 82.4;
+        design_cooling_capacity 3500;
+        cooling_COP 3.0;
+        heating_system_type HEAT_PUMP;
+        design_heating_setpoint 64.4;
+        design_heating_capacity 3000;
+        heating_COP 3.5;
+        thermostat_deadband 2.7;
+        floor_area 1291.668;
+        number_of_stories 2;
+        ceiling_height 8.858268;
+        envelope_UA 341.154;
+        window_wall_ratio 0.18;
+        number_of_doors 2;
+        Rwall 14.195657500000001;
+        Rwindows 1.98739205;
+        Rroof 25.5521835;
+        Rfloor 10.2208734;
+        glazing_layers 2;
+        
+        
+        
+        object waterheater {
+            name main_wh;
+            tank_volume 52.8344;
+            tank_UA 3.7906;
+            tank_setpoint 131.0;
+            heating_element_capacity 4.5;
+            location INSIDE;
+            heat_mode ELECTRIC;
+            water_demand wh_demand*1;
+            impedance_fraction 0.7;
+            power_fraction 0.3;
+            power_factor 1.0;
+        };
+        
+        
+        
+        
+        
+        object ZIPload {
+            name indoor_lights;
+            parent house;
+            base_power yearly_lighting*0.6;
+            power_pf 0.95;
+            heatgain_fraction 1.0;
+            impedance_fraction 0.0;
+            current_fraction 0.0;
+            power_fraction 1.0;
+            is_240 FALSE;
+        };
+        
+        object ZIPload {
+            name exterior_lights;
+            parent house;
+            base_power yearly_lighting*0.1;
+            power_pf 0.95;
+            heatgain_fraction 1.0;
+            impedance_fraction 0.0;
+            current_fraction 0.0;
+            power_fraction 1.0;
+            is_240 FALSE;
+        };
+        
+        
+        
+        
+        
+        object ZIPload {
+            name misc_appliances;
+            parent house;
+            base_power yearly_misc_appliances*0.5;
+            power_pf 0.95;
+            heatgain_fraction 0.3;
+            impedance_fraction 0.1;
+            current_fraction 0.0;
+            power_fraction 0.9;
+            is_240 FALSE;
+        };
+        
+        
+        
+        
+        
+        object ZIPload {
+            name oven;
+            parent house;
+            
+            base_power 3.500;
+            
+            heatgain_fraction 0.3;
+            power_pf 0.95;
+            impedance_fraction 0.05;
+            current_fraction 0.05;
+            power_fraction 0.9;
+            is_240 TRUE;
+        };
+        
+        object ZIPload {
+            name dishwasher;
+            parent house;
+            
+            object player {
+                property base_power;
+                file "dishwasher_consumption.csv";
+                loop 1;
+            };
+            
+            heatgain_fraction 0.1;
+            power_pf 0.95;
+            impedance_fraction 0.1;
+            current_fraction 0.0;
+            power_fraction 0.9;
+            is_240 True;
+        };
+        
+        object ZIPload {
+            name washing_machine;
+            parent house;
+            
+            object player {
+                property base_power;
+                file "washing_machine_consumption.csv";
+                loop 1;
+            };
+            
+            heatgain_fraction 0.05;
+            power_pf 0.95;
+            impedance_fraction 0.1;
+            current_fraction 0.0;
+            power_fraction 0.9;
+            is_240 True;
+        };
+        
+        
+        
+        // Refrigerator - always included with yearly schedule
+        object ZIPload {
+            name refrigerator;
+            parent house;
+            base_power yearly_refrigerator*0.15;
+            heatgain_fraction 0.90;
+            power_pf 0.80;
+            impedance_fraction 0.10;
+            current_fraction 0.60;
+            power_fraction 0.30;
+            is_240 FALSE;
+        };
+        
+        object multi_recorder {
+            property house:total_load,house:air_temperature,house:outdoor_temperature,house:hvac_load,refrigerator:base_power,misc_appliances:base_power;
+            file "results_e560ce45.csv";
+            interval 60;
+            limit 999999;
+        };
+    };
+}
