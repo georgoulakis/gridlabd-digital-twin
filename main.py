@@ -11,7 +11,7 @@ import json
 import datetime
 import shutil
 from typing import Optional, Dict, Any, List, Literal
-from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form, Request
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel
 from jinja2 import Template
@@ -24,7 +24,7 @@ from utils.unit_converters import (
 )
 from utils.parsing_helpers import safe_float, parse_gridlabd_timestamp, parse_iso_datetime
 from utils.partner_helpers import merge_overrides, ensure_config_id_from_partner, build_simulation_request_from_partner
-from utils.result_helpers import ingest_result_timeseries, convert_value_to_partner, fetch_result_series
+from utils.result_helpers import ingest_result_timeseries, convert_value_to_partner, fetch_result_series, convert_csv_temperatures_to_celsius
 
 # Import your pattern generation functions
 # Make sure appliance_pattern_generator.py is in the same directory or in PYTHONPATH
@@ -1019,7 +1019,7 @@ def create_simulation(request: SimulationRequest):
 
 
 @app.post("/partner/simulations", status_code=201)
-def create_partner_simulation(request: PartnerSimulationRequest):
+def create_partner_simulation(request: PartnerSimulationRequest, http_request: Request):
     """
     Partner-friendly endpoint to create and optionally execute a simulation.
     
@@ -1076,17 +1076,30 @@ def create_partner_simulation(request: PartnerSimulationRequest):
 
         result_id = exec_result.get("result_id")
         if request.execution.return_results and result_id:
-            series = fetch_result_series(
-                result_id=result_id,
-                results_pool=results_pool,
-                properties=request.scenario.output_properties,
-                fmt=request.execution.result_format
-            )
-            response["results"] = {
-                "result_id": result_id,
-                "format": request.execution.result_format,
-                "series": series
-            }
+            # Return download URL instead of file content
+            row = db_fetchone(results_pool, "SELECT file_path, filename FROM results WHERE id = %s", (result_id,))
+            if row and os.path.exists(row["file_path"]):
+                # Build download URL using the request's base URL
+                base_url = str(http_request.base_url).rstrip('/')
+                download_url = f"{base_url}/download/results/{result_id}"
+                csv_url = f"{base_url}/results/{result_id}/csv"
+                
+                response["results"] = {
+                    "result_id": result_id,
+                    "format": "csv",
+                    "download_url": download_url,
+                    "csv_url": csv_url,
+                    "filename": row["filename"]
+                }
+                LOG.info("Returned download URL for result %s: %s", result_id, download_url)
+            else:
+                # File not found - return error in JSON response
+                response["results"] = {
+                    "result_id": result_id,
+                    "format": "csv",
+                    "error": "CSV file not found",
+                    "note": f"Use /results/{result_id}/csv endpoint instead"
+                }
 
     return response
 
@@ -1482,7 +1495,15 @@ def execute_simulation(scenario_id: str):
         if not os.path.exists(output_path):
             raise HTTPException(500, "Simulation completed but output file not found")
         
-        # Auto-upload results to results DB
+        # Convert temperatures from Fahrenheit to Celsius in the CSV
+        try:
+            convert_csv_temperatures_to_celsius(output_path)
+            LOG.info("Converted temperatures to Celsius in: %s", output_path)
+        except Exception as e:
+            LOG.warning("Failed to convert temperatures in CSV: %s", str(e))
+            # Continue anyway - don't fail the whole execution
+        
+        # Auto-upload results to results DB (copy already-converted file)
         with open(output_path, 'rb') as f:
             file_content = f.read()
         
@@ -1492,6 +1513,9 @@ def execute_simulation(scenario_id: str):
         
         with open(result_path, 'wb') as f:
             f.write(file_content)
+        
+        # File already converted, no need to convert again
+        LOG.info("Copied converted CSV to results directory: %s", result_path)
         
         meta_json = {
             'scenario_id': scenario_id,

@@ -123,6 +123,99 @@ def convert_value_to_partner(property_name: str, value: Optional[float]) -> Opti
     return value
 
 
+def convert_csv_temperatures_to_celsius(csv_path: str) -> None:
+    """
+    Convert temperature columns in a GridLAB-D CSV file from Fahrenheit to Celsius.
+    
+    Reads the CSV, identifies columns containing 'temperature' in the name,
+    converts their values from Fahrenheit to Celsius, and overwrites the file.
+    
+    Args:
+        csv_path: Path to the CSV file to convert
+    """
+    if not os.path.exists(csv_path):
+        LOG.warning("CSV file not found for temperature conversion: %s", csv_path)
+        return
+    
+    # Read the entire CSV file
+    lines = []
+    header_line = None
+    header_index = -1
+    temperature_indices = []
+    
+    with open(csv_path, 'r', encoding='utf-8') as f:
+        all_lines = f.readlines()
+    
+    # Find header (could be commented with #)
+    for idx, line in enumerate(all_lines):
+        stripped = line.strip()
+        if not stripped:
+            lines.append(line)  # Preserve blank lines
+            continue
+        
+        if stripped.startswith("#"):
+            # Check if this is the header line
+            candidate = stripped.lstrip("#").strip()
+            if "," in candidate and header_index == -1:
+                header_line = line  # Preserve original format including #
+                header = [cell.strip() for cell in candidate.split(",")]
+                # Find temperature columns (skip timestamp at index 0)
+                for col_idx, col in enumerate(header[1:], start=1):
+                    if "temperature" in col.lower():
+                        temperature_indices.append(col_idx)
+                header_index = idx
+                lines.append(line)  # Keep the header as-is for now
+            else:
+                lines.append(line)  # Keep other comments
+        elif header_index == -1:
+            # Non-commented header
+            header = [cell.strip() for cell in stripped.split(",")]
+            header_line = line
+            # Find temperature columns (skip timestamp at index 0)
+            for col_idx, col in enumerate(header[1:], start=1):
+                if "temperature" in col.lower():
+                    temperature_indices.append(col_idx)
+            header_index = idx
+            lines.append(line)
+        else:
+            lines.append(line)
+    
+    if header_index == -1 or not temperature_indices:
+        LOG.debug("No temperature columns found in CSV, skipping conversion: %s", csv_path)
+        return
+    
+    # Convert temperatures in data rows (everything after header)
+    for idx in range(header_index + 1, len(lines)):
+        line = lines[idx]
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue  # Skip blank lines and comments
+        
+        cells = stripped.split(",")
+        if len(cells) <= 1:
+            continue  # Skip invalid rows
+        
+        # Convert temperature values (skip timestamp at index 0)
+        for temp_idx in temperature_indices:
+            if temp_idx < len(cells):
+                try:
+                    fahrenheit_value = float(cells[temp_idx].strip())
+                    celsius_value = fahrenheit_to_celsius(fahrenheit_value)
+                    cells[temp_idx] = str(celsius_value)
+                except (ValueError, IndexError):
+                    # Skip if not a valid number (preserve original value)
+                    pass
+        
+        # Reconstruct the line
+        lines[idx] = ",".join(cells) + "\n"
+    
+    # Write converted CSV back to file
+    with open(csv_path, 'w', encoding='utf-8') as f:
+        f.writelines(lines)
+    
+    LOG.info("Converted %d temperature columns in CSV: %s", len(temperature_indices), csv_path)
+
+
 def fetch_result_series(result_id: str,
                        results_pool,
                        properties: Optional[List[str]] = None,

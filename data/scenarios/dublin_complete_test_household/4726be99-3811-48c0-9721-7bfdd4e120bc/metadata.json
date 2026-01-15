@@ -1,0 +1,16 @@
+{
+  "scenario_id": "4726be99-3811-48c0-9721-7bfdd4e120bc",
+  "config_id": "5b8567b6-7575-47b8-bda4-f0c832235bd0",
+  "config_name": "dublin_complete_test_household",
+  "start_time": "2024-07-01 00:00:00",
+  "stop_time": "2024-07-07 23:59:00",
+  "created_at": "2026-01-14T13:14:48.395375",
+  "glm_file": "scenario_4726be99.glm",
+  "output_file": "results_4726be99.csv",
+  "generated_csvs": [
+    "dishwasher_consumption.csv",
+    "washing_machine_consumption.csv"
+  ],
+  "generation_errors": {},
+  "scenario_dir": "./data/scenarios/dublin_complete_test_household/4726be99-3811-48c0-9721-7bfdd4e120bc"
+}
