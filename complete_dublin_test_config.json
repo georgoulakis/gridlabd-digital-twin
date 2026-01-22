@@ -3,7 +3,7 @@
   "config": {
     "location": "dublin",
     "pilot": "dublin",
-    "timezone": "PST+8DT",
+    "timezone": "PST+9DT",
     
     "floor_area": 120,
     "number_of_stories": 2,

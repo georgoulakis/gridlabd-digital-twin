@@ -13,18 +13,19 @@ module generators;
 clock {
     timezone PST+9DT;
     starttime '2024-07-01 00:00:00';
-    stoptime '2024-07-14 00:00:00';
+    stoptime '2024-07-14 23:59:00';
 }
 
 
 object csv_reader {
-    name climate_reader_bf2d4e67;
+    name climate_reader_3f29c3b1;
     filename "murcia.csv";
 }
 
 object climate {
     tmyfile "murcia.csv";
-    reader climate_reader_bf2d4e67;
+    reader climate_reader_3f29c3b1;
+    
 };
 
 
@@ -72,10 +73,13 @@ object triplex_meter {
     
     object inverter {
         name inverter1;
+        generator_status ONLINE;
         phases S;
         parent meter1;
         inverter_type FOUR_QUADRANT;
+        //four_quadrant_control_mode CONSTANT_PF;
         power_factor 1.0;
+        generator_mode SUPPLY_DRIVEN;
         
         object solar {
             name house_solar;
@@ -83,8 +87,10 @@ object triplex_meter {
             generator_mode SUPPLY_DRIVEN;
             generator_status ONLINE;
             panel_type SINGLE_CRYSTAL_SILICON;
-            efficiency 0.203;
-            area 573.71587;
+            tilt_angle 30.0;           // 30 degrees (standard roof pitch)
+            orientation_azimuth 180;
+            efficiency 0.212;
+            area 259.40999;
             SOLAR_TILT_MODEL SOLPOS;
             SOLAR_POWER_MODEL FLATPLATE;
         };
@@ -94,26 +100,26 @@ object triplex_meter {
     object house {
         name house;
         heating_setpoint 68.0;
-        cooling_setpoint 77.0;
+        cooling_setpoint 80.6;
         system_mode OFF;
         cooling_system_type ELECTRIC;
-        design_cooling_setpoint 80.6;
-        design_cooling_capacity 12000;
-        cooling_COP 2;
+        design_cooling_setpoint 82.4;
+        design_cooling_capacity 17231;
+        cooling_COP 2.48;
         heating_system_type HEAT_PUMP;
-        design_heating_setpoint 66.2;
-        design_heating_capacity 12000;
-        heating_COP 2.5;
+        design_heating_setpoint 64.4;
+        design_heating_capacity 17231;
+        heating_COP 2.98;
         thermostat_deadband 2.7;
-        floor_area 861.112;
-        number_of_stories 1;
+        floor_area 1722.224;
+        number_of_stories 4;
         ceiling_height 8.2021;
-        envelope_UA 464.3485;
-        window_wall_ratio 0.125;
-        number_of_doors 2;
+        envelope_UA 341.154;
+        window_wall_ratio 0.18;
+        number_of_doors 3;
         Rwall 90.852208;
         Rwindows 9.198786060000002;
-        Rroof 107.88699700000001;
+        Rroof 113.56526000000001;
         Rfloor 107.88699700000001;
         glazing_layers 1;
         
@@ -121,7 +127,7 @@ object triplex_meter {
         
         object waterheater {
             name main_wh;
-            tank_volume 52.8344;
+            tank_volume 37.512424;
             tank_UA 3.7906;
             tank_setpoint 131.0;
             heating_element_capacity 4.5;
@@ -130,7 +136,7 @@ object triplex_meter {
             water_demand wh_demand*1;
             impedance_fraction 0.7;
             power_fraction 0.3;
-            power_factor 1.0;
+            power_factor 0.96;
         };
         
         
@@ -152,7 +158,7 @@ object triplex_meter {
         object ZIPload {
             name exterior_lights;
             parent house;
-            base_power yearly_lighting*0.2;
+            base_power yearly_lighting*0.3;
             power_pf 0.95;
             heatgain_fraction 1.0;
             impedance_fraction 0.0;
@@ -168,7 +174,7 @@ object triplex_meter {
         object ZIPload {
             name misc_appliances;
             parent house;
-            base_power yearly_misc_appliances*1.2;
+            base_power yearly_misc_appliances*0.8;
             power_pf 0.95;
             heatgain_fraction 0.3;
             impedance_fraction 0.1;
@@ -233,9 +239,9 @@ object triplex_meter {
         };
         
         object multi_recorder {
-            property house:total_load,house:air_temperature,house:outdoor_temperature,house:hvac_load,refrigerator:base_power,dishwasher:base_power,washing_machine:base_power,indoor_lights:power.real,exterior_lights:power.real,main_wh:power.real,misc_appliances:base_power, house_solar:P_Out.real,house_solar:P_Out ;
-            file "results_bf2d4e67.csv";
-            interval 60;
+            property house:total_load,house:hvac_load,refrigerator:base_power,dishwasher:base_power,washing_machine:base_power,misc_appliances:base_power,indoor_lights:power.real,exterior_lights:power.real,main_wh:power.real,house:hvac_power.real,house:air_temperature,house:outdoor_temperature,house:hvac_last_on,house:hvac_duty_cycle,house:cooling_demand,house:heating_demand,house:heating_setpoint,house:cooling_setpoint,house:system_mode,main_wh:water_demand,meter1:measured_real_energy,meter1:measured_real_power,inverter1:P_Out,inverter1:Q_Out,house_solar:P_Out.real;
+            file "results_3f29c3b1.csv";
+            interval 900;
             limit 999999;
         };
     };

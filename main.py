@@ -129,6 +129,8 @@ object triplex_meter {
             panel_type SINGLE_CRYSTAL_SILICON;
             efficiency {{ solar_config.efficiency }};
             area {{ solar_config.area }};
+            SOLAR_TILT_MODEL SOLPOS;
+            SOLAR_POWER_MODEL FLATPLATE;
         };
     };
     {% endif %}
